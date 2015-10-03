@@ -12,21 +12,21 @@ class FFIDCAD:
 
     lmbda = 0
     tao = 0
-    pvalue = 0
+    p_value = 0
     read_length = 0
         
-    def __init__(self, ff_lmbda=0.99, tao=3., pvalue=0.98, conf=None, ):
+    def __init__(self, ff_lambda=0.99, tao=3., p_value=0.98, conf=None, ):
         ''' 
             @mean - stored mean value
             @sigma - vectorized cov matrix
             @tao - effective forgeting coefficient
-            @pvalue - propation of data that the model will cover
+            @p_value - propation of data that the model will cover
             @conf - configuration file
         '''
         self.conf = conf
-        self.lmbda = ff_lmbda
+        self.lmbda = ff_lambda
         self.tao = tao
-        self.pvalue = pvalue
+        self.p_value = p_value
         self.mu = None
         self.sigma_inv = None
         self.read_length = 0
@@ -145,9 +145,9 @@ class FFIDCAD:
             
     def chisquare_boundary(self, dimension):
         ''' return the inverse of chi-square statistics with specific
-            @pvalue and @degree_of_freedom
+            @p_value and @degree_of_freedom
         '''    
-        return chi2.ppf(self.pvalue, dimension)
+        return chi2.ppf(self.p_value, dimension)
 
 
     def eff_n(self,):
@@ -159,15 +159,21 @@ class FFIDCAD:
         return self.read_length if self.read_length < eff_n else eff_n
 
 
-if __name__ == '__main__':
-    ''' test case of all methods'''
-    #data = sys.argv[1]
-    mu = np.array([1.,2.])
-    cov = np.array([[1.2,1.9], [1.9,3.1]])
-    data = np.random.multivariate_normal(mu, cov, size=1000)
-    
-    detector = FFIDCAD()
-    for exmp in data:
-        rs, prob = detector.predict(exmp)
-        print '%s\t%s' % (rs, round(prob,4))
 
+def test(data_file):
+    data = np.genfromtxt(data_file, delimiter=',')
+    for coef in xrange(9999,9900, -5):
+        model = FFIDCAD(ff_lambda=0.99, p_value=coef*0.0001)
+        
+        tp,fp,tn,fn = 0,0,0,0
+        for idx, exmp in enumerate(data[:,:2]):
+            pred,_ = model.predict(exmp)
+            tp = tp + (1 if pred == data[idx][2] and pred == 1 else 0)
+            fp = fp + (1 if (pred - data[idx][2]) == 1 else 0)
+            tn = tn + (1 if pred == data[idx][2] and pred == 0 else 0)
+            fn = fn + (1 if (data[idx][2] - pred) == 1 else 0)
+        print np.float(tp)/(tp+fn), np.float(fp)/(fp+tn)
+            
+
+if __name__ == '__main__':
+    test(sys.argv[1])
