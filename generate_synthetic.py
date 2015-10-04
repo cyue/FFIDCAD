@@ -47,14 +47,49 @@ def main():
     initial_mu = np.array([5,5])
     initial_cov_matrix = np.array([[1,0.1],[0.1,1]])
 
+    # low low
+    mus, cov_matrices = create_params(initial_mu,
+                            initial_cov_matrix,
+                            0.1,
+                            [[0.01,0.001],[0.001,0.01]],
+                            100)
+    out = open('../synthetics/low_low.dat', 'w')
+    samples = generate(mus, cov_matrices, 10)
+    for sample in samples:
+        out.write('%s\n' % ','.join([str(item) for item in sample]))
+
+    # low high 
+    mus, cov_matrices = create_params(initial_mu,
+                            initial_cov_matrix,
+                            0.1,
+                            [[0.1,0.001],[0.001,0.1]],
+                            100)
+    out = open('../synthetics/low_high.dat', 'w')
+    samples = generate(mus, cov_matrices, 10)
+    for sample in samples:
+        out.write('%s\n' % ','.join([str(item) for item in sample]))
+
+    # high high
     mus, cov_matrices = create_params(initial_mu,
                             initial_cov_matrix,
                             0.5,
-                            [[0.,0.01],[0.,0.01]],
+                            [[0.1,0.001],[0.001,0.1]],
                             100)
+    out = open('../synthetics/high_high.dat', 'w')
     samples = generate(mus, cov_matrices, 10)
     for sample in samples:
-        print ','.join([str(item) for item in sample])
+        out.write('%s\n' % ','.join([str(item) for item in sample]))
+
+    # high low
+    mus, cov_matrices = create_params(initial_mu,
+                            initial_cov_matrix,
+                            0.5,
+                            [[0.01,0.001],[0.01,0.001]],
+                            100)
+    out = open('../synthetics/high_low.dat', 'w')
+    samples = generate(mus, cov_matrices, 10)
+    for sample in samples:
+        out.write('%s\n' % ','.join([str(item) for item in sample]))
 
 
 if __name__ == '__main__':

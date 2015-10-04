@@ -75,7 +75,7 @@ class FFIDCAD:
         if self.sigma_inv is None:
             # define the shape of inverse of covariance matrix
             inv_cov_shape = (len(sample), len(sample))
-            return np.linalg.inv(1000 * np.eye(len(sample)) +  
+            return np.linalg.inv(100 * np.eye(len(sample)) +  
                     np.zeros(inv_cov_shape))
 
 
@@ -162,8 +162,8 @@ class FFIDCAD:
 
 def test(data_file):
     data = np.genfromtxt(data_file, delimiter=',')
-    for coef in xrange(9999,9900, -5):
-        model = FFIDCAD(ff_lambda=0.99, p_value=coef*0.0001)
+    for coef in xrange(99999,99900, -1):
+        model = FFIDCAD(ff_lambda=0.99, p_value=coef*0.00001)
         
         tp,fp,tn,fn = 0,0,0,0
         for idx, exmp in enumerate(data[:,:2]):
