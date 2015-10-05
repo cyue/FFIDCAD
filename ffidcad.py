@@ -14,6 +14,7 @@ class FFIDCAD:
     tao = 0
     p_value = 0
     read_length = 0
+    boundary = None
         
     def __init__(self, ff_lambda=0.99, tao=3., p_value=0.98, conf=None, ):
         ''' 
@@ -30,6 +31,7 @@ class FFIDCAD:
         self.mu = None
         self.sigma_inv = None
         self.read_length = 0
+        self.boundary = None
 
 
     def read(self, sample):
@@ -147,7 +149,11 @@ class FFIDCAD:
         ''' return the inverse of chi-square statistics with specific
             @p_value and @degree_of_freedom
         '''    
-        return chi2.ppf(self.p_value, dimension)
+        if self.boundary is None:
+            self.boundary = chi2.ppf(self.p_value, dimension)
+            
+        return self.boundary
+
 
 
     def eff_n(self,):
@@ -162,7 +168,7 @@ class FFIDCAD:
 
 def test(data_file):
     data = np.genfromtxt(data_file, delimiter=',')
-    for coef in xrange(99999,99900, -1):
+    for coef in xrange(99999,99900, -5):
         model = FFIDCAD(ff_lambda=0.99, p_value=coef*0.00001)
         
         tp,fp,tn,fn = 0,0,0,0
